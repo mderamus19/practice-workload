@@ -79,7 +79,7 @@ class Assigned_Exercise():
         self.exercise = exercise
 
     def __repr__(self):
-        return f'{self.first_name} {self.last_name} {self.exercise}'
+        return f'{self.first_name} {self.last_name} is working on:\n{"*"}{self.exercise}'
 
 
 class StudentExerciseReports():
