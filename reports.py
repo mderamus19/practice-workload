@@ -71,6 +71,17 @@ class Instructor_Cohort():
     def __repr__(self):
         return f'{self.first_name} {self.last_name } {self.cohort}'
 
+class Assigned_Exercise():
+
+    def __init__(self,first_name, last_name, exercise):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.exercise = exercise
+
+    def __repr__(self):
+        return f'{self.first_name} {self.last_name} {self.exercise}'
+
+
 class StudentExerciseReports():
 
     """Methods for reports on the Student Exercises database"""
@@ -182,6 +193,7 @@ class StudentExerciseReports():
             WHERE exercise_language = "C#"
                             """)
 
+
 # conditional to check the length of all csharp exercises
             all_csharp_exercises = db_cursor.fetchall()
             if len(all_csharp_exercises) == 0:
@@ -230,6 +242,33 @@ class StudentExerciseReports():
         for instructorCohort in all_instructors_cohorts:
             print(instructorCohort)
 
+    def assigned_exercises(self):
+        '''Retrieve exercises assigned to students'''
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = lambda cursor, row: Assigned_Exercise(row[0], row[1], row[2])
+            db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT
+        s.first_name,
+        s.last_name,
+        e.exercise_name
+        FROM exercise e
+        JOIN student_exercise se on se.student_exercise_Id = e.exercise_Id
+        JOIN student s on s.student_Id = se.student_Id
+                          """)
+
+        assigned_exercises = db_cursor.fetchall()
+        for assignedExercise in assigned_exercises:
+            print(assignedExercise)
+
+
+
+
+
+
+
+
 reports = StudentExerciseReports()
 reports.all_students()
 reports.all_cohorts()
@@ -239,3 +278,4 @@ reports.all_py_exercises()
 reports.all_csharp_exercises()
 reports.all_students_cohorts()
 reports.all_instructors_cohorts()
+reports.assigned_exercises()
