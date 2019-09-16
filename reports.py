@@ -259,14 +259,8 @@ class StudentExerciseReports():
                           """)
 
         student_workload = db_cursor.fetchall()
-        for assignedExercise in student_workload:
-            print(assignedExercise)
-
-
-
-
-
-
+        for studentWorkload in student_workload:
+            print(studentWorkload)
 
 
 reports = StudentExerciseReports()
