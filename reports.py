@@ -73,7 +73,8 @@ class Instructor_Cohort():
 
 class Student_Workload():
 
-    def __init__(self,first_name, last_name, exercise):
+    def __init__(self, id, first_name, last_name, exercise):
+        self.id = id
         self.first_name = first_name
         self.last_name = last_name
         self.exercise = exercise
@@ -243,24 +244,39 @@ class StudentExerciseReports():
             print(instructorCohort)
 
     def student_workload(self):
+        workload = dict()
         '''Retrieve exercises assigned to students'''
         with sqlite3.connect(self.db_path) as conn:
-            conn.row_factory = lambda cursor, row: Student_Workload(row[0], row[1], row[2])
             db_cursor = conn.cursor()
 
         db_cursor.execute("""
-        SELECT
+        SELECT e.exercise_Id,
+        e.exercise_name,
+        s.student_Id,
         s.first_name,
-        s.last_name,
-        e.exercise_name
+        s.last_name
         FROM exercise e
         JOIN student_exercise se on se.student_exercise_Id = e.exercise_Id
         JOIN student s on s.student_Id = se.student_Id
                           """)
 
-        student_workload = db_cursor.fetchall()
-        for studentWorkload in student_workload:
-            print(studentWorkload)
+        dataset = db_cursor.fetchall()
+        # iterate over the dataset
+        for row in dataset:
+            exercise_Id = row[0]
+            exercise_name = row[1]
+            student_Id = row[2]
+            student_name = f'{row[3]} {row[4]}'
+
+            if student_name not in workload:
+                workload[student_name] = [exercise_name]
+            else:
+                workload[student_name].append(exercise_name)
+
+        for student, exercises in workload.items():
+            print(student)
+            for exercise in exercises:
+                print (f'\t* {exercise}')
 
 
 reports = StudentExerciseReports()
